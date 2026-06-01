@@ -6,249 +6,66 @@
 <title>视频课程</title>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
-  min-height: 100vh;
-  color: #2c3e50;
-}
-
-.login-overlay {
-  position: fixed; inset: 0;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 9999;
-}
-
-.login-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 40px 36px;
-  width: 380px;
-  max-width: 90vw;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  text-align: center;
-}
-
-.login-card .logo { font-size: 48px; margin-bottom: 8px; }
-
-.login-card h2 { font-size: 22px; color: #1a1a2e; margin-bottom: 4px; }
-
-.login-card .login-sub { font-size: 13px; color: #a0aab4; margin-bottom: 28px; }
-
-.login-card .field { text-align: left; margin-bottom: 18px; }
-
-.login-card label {
-  display: block; font-size: 13px; font-weight: 600;
-  color: #5a6d80; margin-bottom: 6px;
-}
-
-.login-card input {
-  width: 100%; padding: 12px 14px;
-  border: 1.5px solid #dde1e7; border-radius: 10px;
-  font-size: 15px; color: #2c3e50; background: #f8f9fb;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.login-card input:focus {
-  outline: none; border-color: #0f3460;
-  box-shadow: 0 0 0 3px rgba(15,52,96,0.08);
-}
-
-.login-card .login-btn {
-  width: 100%; padding: 13px; border: none; border-radius: 10px;
-  background: linear-gradient(135deg, #0f3460, #1a508b);
-  color: #fff; font-size: 16px; font-weight: 600;
-  cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
-  margin-top: 6px;
-}
-
-.login-card .login-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(15,52,96,0.3);
-}
-
-.login-card .login-btn:active { transform: translateY(0); }
-
-.login-card .login-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-.login-error { color: #e94560; font-size: 13px; margin-top: 12px; min-height: 20px; }
-
-.login-loading {
-  display: inline-block; width: 16px; height: 16px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: #fff; border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-  vertical-align: middle; margin-right: 6px;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.header {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-  padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 100;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-}
-
-.header h1 { color: #fff; font-size: 22px; font-weight: 700; letter-spacing: 1px; }
-
-.header .user-area { display: flex; align-items: center; gap: 10px; }
-
-.header .user-name { color: rgba(255,255,255,0.8); font-size: 13px; }
-
-.header .logout-btn {
-  padding: 6px 14px; border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 6px; background: transparent; color: #fff;
-  font-size: 12px; cursor: pointer; transition: background 0.2s;
-}
-
-.header .logout-btn:hover { background: rgba(255,255,255,0.1); }
-
-.toolbar {
-  background: #fff; padding: 16px 24px; display: flex; gap: 12px;
-  align-items: center; flex-wrap: wrap; border-bottom: 1px solid #e8ecf1;
-  position: sticky; top: 68px; z-index: 99;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-}
-
-.toolbar .filter-group { display: flex; align-items: center; gap: 8px; }
-
-.toolbar label { font-size: 13px; font-weight: 600; color: #7f8c9b; white-space: nowrap; }
-
-.toolbar select {
-  padding: 8px 32px 8px 12px; border: 1.5px solid #dde1e7;
-  border-radius: 8px; font-size: 14px; color: #2c3e50;
-  background: #f8f9fb; cursor: pointer; appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%237f8c9b'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 10px center;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.toolbar select:focus { outline: none; border-color: #0f3460; box-shadow: 0 0 0 3px rgba(15,52,96,0.08); }
-
-.search-box { flex: 1; min-width: 200px; position: relative; }
-
-.search-box input {
-  width: 100%; padding: 9px 14px 9px 38px;
-  border: 1.5px solid #dde1e7; border-radius: 8px;
-  font-size: 14px; color: #2c3e50; background: #f8f9fb;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.search-box input:focus { outline: none; border-color: #0f3460; box-shadow: 0 0 0 3px rgba(15,52,96,0.08); }
-
-.search-box .search-icon {
-  position: absolute; left: 12px; top: 50%;
-  transform: translateY(-50%); color: #b0b8c1; pointer-events: none;
-}
-
-.toolbar .count-badge {
-  margin-left: auto; background: #eef2f7; color: #5a6d80;
-  padding: 6px 14px; border-radius: 20px; font-size: 13px;
-  font-weight: 600; white-space: nowrap;
-}
-
-.content { max-width: 900px; margin: 0 auto; padding: 24px 20px 40px; }
-
-.chapter-section { margin-bottom: 28px; }
-
-.chapter-title {
-  font-size: 17px; font-weight: 700; color: #1a1a2e;
-  padding: 10px 0 12px; border-bottom: 2px solid #e8ecf1;
-  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
-}
-
-.chapter-title::before {
-  content: ""; width: 4px; height: 20px;
-  background: linear-gradient(180deg, #0f3460, #e94560); border-radius: 2px;
-}
-
-.video-grid { display: grid; gap: 10px; }
-
-.video-card {
-  display: flex; align-items: center; gap: 14px;
-  padding: 14px 18px; background: #fff; border-radius: 12px;
-  cursor: pointer; transition: all 0.2s ease;
-  border: 1px solid transparent; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-  text-decoration: none; color: inherit;
-}
-
-.video-card:hover {
-  border-color: #0f3460;
-  box-shadow: 0 4px 16px rgba(15,52,96,0.1);
-  transform: translateY(-2px);
-}
-
-.video-card:active { transform: translateY(0); }
-
-.video-index {
-  width: 36px; height: 36px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700; color: #fff;
-  background: linear-gradient(135deg, #0f3460, #1a508b); flex-shrink: 0;
-}
-
-.video-info { flex: 1; min-width: 0; }
-
-.video-info .video-title {
-  font-size: 15px; font-weight: 600; color: #2c3e50;
-  line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-
-.video-meta { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
-
-.video-meta .duration { font-size: 12px; color: #7f8c9b; display: flex; align-items: center; gap: 4px; }
-
-.video-card .play-btn {
-  width: 34px; height: 34px; border-radius: 50%;
-  background: linear-gradient(135deg, #e94560, #c23152);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: transform 0.2s;
-}
-
-.video-card:hover .play-btn { transform: scale(1.1); }
-
-.play-btn::after {
-  content: ""; width: 0; height: 0;
-  border-left: 10px solid #fff;
-  border-top: 6px solid transparent;
-  border-bottom: 6px solid transparent;
-  margin-left: 2px;
-}
-
-.loading-state, .empty-state { text-align: center; padding: 60px 20px; color: #a0aab4; }
-
-.loading-state .spinner {
-  width: 40px; height: 40px; border: 3px solid #e8ecf1;
-  border-top-color: #0f3460; border-radius: 50%;
-  animation: spin 0.8s linear infinite; margin: 0 auto 16px;
-}
-
-.empty-state .empty-icon { font-size: 48px; margin-bottom: 16px; }
-.empty-state p { font-size: 15px; line-height: 1.6; }
-
-.error-state { text-align: center; padding: 60px 20px; color: #e94560; }
-
-.footer { text-align: center; padding: 20px; color: #b0b8c1; font-size: 12px; }
-
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cdd4de; border-radius: 3px; }
-
-@media (max-width: 600px) {
-  .header { padding: 16px 16px; }
-  .header h1 { font-size: 18px; }
-  .toolbar { padding: 12px 14px; top: 56px; }
-  .toolbar select { font-size: 13px; padding: 7px 28px 7px 10px; }
-  .search-box input { font-size: 13px; padding: 8px 12px 8px 34px; }
-  .video-card { padding: 12px 14px; gap: 10px; }
-  .video-info .video-title { font-size: 14px; }
-  .video-index { width: 30px; height: 30px; font-size: 12px; border-radius: 8px; }
-  .login-card { padding: 30px 24px; }
-}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:linear-gradient(135deg,#f5f7fa,#e4e8ec);min-height:100vh;color:#2c3e50}
+.login-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);display:flex;align-items:center;justify-content:center;z-index:9999}
+.login-card{background:#fff;border-radius:16px;padding:40px 36px;width:380px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center}
+.login-card .logo{font-size:48px;margin-bottom:8px}
+.login-card h2{font-size:22px;color:#1a1a2e;margin-bottom:4px}
+.login-card .login-sub{font-size:13px;color:#a0aab4;margin-bottom:28px}
+.login-card .field{text-align:left;margin-bottom:18px}
+.login-card label{display:block;font-size:13px;font-weight:600;color:#5a6d80;margin-bottom:6px}
+.login-card input{width:100%;padding:12px 14px;border:1.5px solid #dde1e7;border-radius:10px;font-size:15px;color:#2c3e50;background:#f8f9fb;transition:border-color .2s,box-shadow .2s}
+.login-card input:focus{outline:none;border-color:#0f3460;box-shadow:0 0 0 3px rgba(15,52,96,.08)}
+.login-card .login-btn{width:100%;padding:13px;border:none;border-radius:10px;background:linear-gradient(135deg,#0f3460,#1a508b);color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:transform .15s,box-shadow .15s;margin-top:6px}
+.login-card .login-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(15,52,96,.3)}
+.login-card .login-btn:active{transform:translateY(0)}
+.login-card .login-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.login-error{color:#e94560;font-size:13px;margin-top:12px;min-height:20px}
+.login-loading{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.header{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+.header h1{color:#fff;font-size:22px;font-weight:700;letter-spacing:1px}
+.header .user-area{display:flex;align-items:center;gap:10px}
+.header .user-name{color:rgba(255,255,255,.8);font-size:13px}
+.header .logout-btn{padding:6px 14px;border:1px solid rgba(255,255,255,.3);border-radius:6px;background:transparent;color:#fff;font-size:12px;cursor:pointer;transition:background .2s}
+.header .logout-btn:hover{background:rgba(255,255,255,.1)}
+.toolbar{background:#fff;padding:16px 24px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #e8ecf1;position:sticky;top:68px;z-index:99;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.toolbar .filter-group{display:flex;align-items:center;gap:8px}
+.toolbar label{font-size:13px;font-weight:600;color:#7f8c9b;white-space:nowrap}
+.toolbar select{padding:8px 32px 8px 12px;border:1.5px solid #dde1e7;border-radius:8px;font-size:14px;color:#2c3e50;background:#f8f9fb;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%237f8c9b'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;transition:border-color .2s,box-shadow .2s}
+.toolbar select:focus{outline:none;border-color:#0f3460;box-shadow:0 0 0 3px rgba(15,52,96,.08)}
+.search-box{flex:1;min-width:200px;position:relative}
+.search-box input{width:100%;padding:9px 14px 9px 38px;border:1.5px solid #dde1e7;border-radius:8px;font-size:14px;color:#2c3e50;background:#f8f9fb;transition:border-color .2s,box-shadow .2s}
+.search-box input:focus{outline:none;border-color:#0f3460;box-shadow:0 0 0 3px rgba(15,52,96,.08)}
+.search-box .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#b0b8c1;pointer-events:none}
+.toolbar .count-badge{margin-left:auto;background:#eef2f7;color:#5a6d80;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap}
+.content{max-width:900px;margin:0 auto;padding:24px 20px 40px}
+.chapter-section{margin-bottom:28px}
+.chapter-title{font-size:17px;font-weight:700;color:#1a1a2e;padding:10px 0 12px;border-bottom:2px solid #e8ecf1;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.chapter-title::before{content:"";width:4px;height:20px;background:linear-gradient(180deg,#0f3460,#e94560);border-radius:2px}
+.video-grid{display:grid;gap:10px}
+.video-card{display:flex;align-items:center;gap:14px;padding:14px 18px;background:#fff;border-radius:12px;cursor:pointer;transition:all .2s ease;border:1px solid transparent;box-shadow:0 1px 4px rgba(0,0,0,.04);text-decoration:none;color:inherit}
+.video-card:hover{border-color:#0f3460;box-shadow:0 4px 16px rgba(15,52,96,.1);transform:translateY(-2px)}
+.video-card:active{transform:translateY(0)}
+.video-index{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,#0f3460,#1a508b);flex-shrink:0}
+.video-info{flex:1;min-width:0}
+.video-info .video-title{font-size:15px;font-weight:600;color:#2c3e50;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.video-meta{display:flex;align-items:center;gap:6px;margin-top:4px}
+.video-meta .duration{font-size:12px;color:#7f8c9b;display:flex;align-items:center;gap:4px}
+.video-card .play-btn{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#e94560,#c23152);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .2s}
+.video-card:hover .play-btn{transform:scale(1.1)}
+.play-btn::after{content:"";width:0;height:0;border-left:10px solid #fff;border-top:6px solid transparent;border-bottom:6px solid transparent;margin-left:2px}
+.loading-state,.empty-state{text-align:center;padding:60px 20px;color:#a0aab4}
+.loading-state .spinner{width:40px;height:40px;border:3px solid #e8ecf1;border-top-color:#0f3460;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+.empty-state .empty-icon{font-size:48px;margin-bottom:16px}
+.empty-state p{font-size:15px;line-height:1.6}
+.error-state{text-align:center;padding:60px 20px;color:#e94560}
+.footer{text-align:center;padding:20px;color:#b0b8c1;font-size:12px}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#cdd4de;border-radius:3px}
+@media(max-width:600px){.header{padding:16px}.header h1{font-size:18px}.toolbar{padding:12px 14px;top:56px}.toolbar select{font-size:13px;padding:7px 28px 7px 10px}.search-box input{font-size:13px;padding:8px 12px 8px 34px}.video-card{padding:12px 14px;gap:10px}.video-info .video-title{font-size:14px}.video-index{width:30px;height:30px;font-size:12px;border-radius:8px}.login-card{padding:30px 24px}}
 </style>
 </head>
 <body>
@@ -266,7 +83,7 @@ body {
       <label for="passwordInput">密码</label>
       <input type="password" id="passwordInput" placeholder="请输入密码" autocomplete="current-password">
     </div>
-    <button class="login-btn" id="loginBtn" onclick="doLogin()">登 录</button>
+    <button type="button" class="login-btn" id="loginBtn">登 录</button>
     <div class="login-error" id="loginError"></div>
   </div>
 </div>
@@ -277,16 +94,14 @@ body {
   <h1>📺 视频课程</h1>
   <div class="user-area">
     <span class="user-name" id="displayName"></span>
-    <button class="logout-btn" onclick="doLogout()">退出登录</button>
+    <button type="button" class="logout-btn" id="logoutBtn">退出登录</button>
   </div>
 </div>
 
 <div class="toolbar">
   <div class="filter-group">
     <label for="chapterFilter">章节</label>
-    <select id="chapterFilter">
-      <option value="all">全部</option>
-    </select>
+    <select id="chapterFilter"><option value="all">全部</option></select>
   </div>
   <div class="search-box">
     <span class="search-icon">🔍</span>
@@ -296,10 +111,7 @@ body {
 </div>
 
 <div class="content" id="content">
-  <div class="loading-state">
-    <div class="spinner"></div>
-    <p>正在加载课程数据…</p>
-  </div>
+  <div class="loading-state"><div class="spinner"></div><p>正在加载课程数据…</p></div>
 </div>
 
 <div class="footer">共 <span id="footerCount">--</span> 个视频课程</div>
@@ -307,255 +119,174 @@ body {
 </div>
 
 <script>
-var USERS_URL = "./users.json";
-var EXCEL_URL = "./spk.xlsx";
-var COURSE_DATA = null;
+(function(){
+"use strict";
+console.log("App starting...");
 
-async function sha256(message) {
-  var msgBuffer = new TextEncoder().encode(message);
-  var hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-  var hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(function(b) { return b.toString(16).padStart(2, "0"); }).join("");
+var USERS_URL="./users.json";
+var EXCEL_URL="./spk.xlsx";
+var COURSE_DATA=null;
+
+async function sha256(m){
+  var b=new TextEncoder().encode(m);
+  var h=await crypto.subtle.digest("SHA-256",b);
+  return Array.from(new Uint8Array(h)).map(function(x){return x.toString(16).padStart(2,"0")}).join("");
 }
 
-async function doLogin() {
-  var username = document.getElementById("usernameInput").value.trim();
-  var password = document.getElementById("passwordInput").value;
-  var btn = document.getElementById("loginBtn");
-  var err = document.getElementById("loginError");
-
-  if (!username || !password) {
-    err.textContent = "请输入账号和密码";
-    return;
-  }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="login-loading"></span>登录中…';
-  err.textContent = "";
-
-  try {
-    var resp = await fetch(USERS_URL);
-    if (!resp.ok) throw new Error("无法加载用户数据");
-    var users = await resp.json();
-
-    var hash = await sha256(password);
-    if (users[username] === hash) {
-      localStorage.setItem("course_user", username);
-      localStorage.setItem("course_hash", hash);
+async function doLogin(){
+  console.log("doLogin called");
+  var u=document.getElementById("usernameInput").value.trim();
+  var p=document.getElementById("passwordInput").value;
+  var btn=document.getElementById("loginBtn");
+  var err=document.getElementById("loginError");
+  if(!u||!p){err.textContent="请输入账号和密码";return;}
+  btn.disabled=true;btn.textContent="登录中…";err.textContent="";
+  try{
+    console.log("Fetching users.json...");
+    var r=await fetch(USERS_URL);
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    var users=await r.json();
+    console.log("Users loaded:",Object.keys(users));
+    var hash=await sha256(p);
+    console.log("Hash computed, checking...");
+    if(users[u]===hash){
+      console.log("Login success!");
+      localStorage.setItem("course_user",u);
+      localStorage.setItem("course_hash",hash);
       hideLogin();
       await loadCourses();
-    } else {
-      err.textContent = "账号或密码错误，请重试";
+    }else{
+      console.log("Bad credentials");
+      err.textContent="账号或密码错误，请重试";
     }
-  } catch (e) {
-    err.textContent = "登录失败：" + e.message;
+  }catch(e){
+    console.error("Login error:",e);
+    err.textContent="登录失败："+e.message;
   }
-
-  btn.disabled = false;
-  btn.innerHTML = "登 录";
+  btn.disabled=false;btn.textContent="登 录";
 }
 
-function hideLogin() {
-  document.getElementById("loginOverlay").style.display = "none";
-  document.getElementById("mainApp").style.display = "block";
-  var user = localStorage.getItem("course_user");
-  if (user) {
-    document.getElementById("displayName").textContent = "👤 " + user;
-  }
+function hideLogin(){
+  document.getElementById("loginOverlay").style.display="none";
+  document.getElementById("mainApp").style.display="block";
+  var u=localStorage.getItem("course_user");
+  if(u)document.getElementById("displayName").textContent="👤 "+u;
 }
 
-function doLogout() {
+function doLogout(){
   localStorage.removeItem("course_user");
   localStorage.removeItem("course_hash");
   location.reload();
 }
 
-async function loadCourses() {
-  try {
-    var resp = await fetch(EXCEL_URL);
-    if (!resp.ok) throw new Error("HTTP " + resp.status);
-    var arrayBuffer = await resp.arrayBuffer();
-    var workbook = XLSX.read(arrayBuffer, { type: "array" });
-    var sheet = workbook.Sheets[workbook.SheetNames[0]];
-    var rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
+async function loadCourses(){
+  console.log("Loading courses...");
+  try{
+    var r=await fetch(EXCEL_URL);
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    var buf=await r.arrayBuffer();
+    var wb=XLSX.read(buf,{type:"array"});
+    var ws=wb.Sheets[wb.SheetNames[0]];
+    var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
+    console.log("Excel rows:",rows.length);
     parseExcelData(rows);
     initApp();
-  } catch (e) {
-    document.getElementById("content").innerHTML = "<div class="error-state"><p>⚠ 课程数据加载失败</p><p style="font-size:13px;margin-top:4px;">{msg}</p></div>".replace("{msg}", e.message);
+  }catch(e){
+    console.error("Load courses error:",e);
+    document.getElementById("content").innerHTML="<div class=\"error-state\"><p>⚠ 课程数据加载失败</p><p style=\"font-size:13px;margin-top:4px;\">"+e.message+"</p></div>";
   }
 }
 
-function parseExcelData(rows) {
-  var chapters = {};
-  var videosAll = [];
-
-  for (var i = 0; i < rows.length; i++) {
-    var row = rows[i];
-    var title = row[0];
-    var chapterNum = row[1];
-    var sortOrder = row[2];
-    var duration = row[3];
-    var url = row[4];
-
-    if (title == null) continue;
-
-    var durStr = "";
-    if (duration != null) {
-      if (typeof duration === "string") {
-        durStr = duration;
-      } else if (typeof duration === "number") {
-        var totalSeconds = Math.round(duration * 86400);
-        var mins = Math.floor(totalSeconds / 60);
-        var secs = totalSeconds % 60;
-        durStr = String(mins).padStart(2, "0") + ":" + String(secs).padStart(2, "0");
-      } else {
-        durStr = String(duration);
-      }
+function parseExcelData(rows){
+  var ch={};var va=[];
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i];var t=r[0];var cn=r[1];var so=r[2];var du=r[3];var ur=r[4];
+    if(t==null)continue;
+    var ds="";
+    if(du!=null){
+      if(typeof du==="string")ds=du;
+      else if(typeof du==="number"){var ts=Math.round(du*86400);ds=String(Math.floor(ts/60)).padStart(2,"0")+":"+String(ts%60).padStart(2,"0");}
+      else ds=String(du);
     }
-
-    var urlStr = url != null ? String(url) : "";
-
-    if (sortOrder === 0 || sortOrder === "0") {
-      if (!chapters[chapterNum]) chapters[chapterNum] = { name: title, videos: [] };
-      else chapters[chapterNum].name = title;
-    } else {
-      var video = {
-        title: title, chapter: chapterNum, sort: sortOrder,
-        duration: durStr, url: urlStr
-      };
-      if (!chapters[chapterNum]) chapters[chapterNum] = { name: "第" + chapterNum + "章", videos: [] };
-      chapters[chapterNum].videos.push(video);
-      videosAll.push(video);
+    var us=ur!=null?String(ur):"";
+    if(so===0||so==="0"){
+      if(!ch[cn])ch[cn]={name:t,videos:[]};else ch[cn].name=t;
+    }else{
+      var v={title:t,chapter:cn,sort:so,duration:ds,url:us};
+      if(!ch[cn])ch[cn]={name:"第"+cn+"章",videos:[]};
+      ch[cn].videos.push(v);va.push(v);
     }
   }
-
-  for (var key in chapters) {
-    chapters[key].videos.sort(function(a, b) { return a.sort - b.sort; });
-  }
-  videosAll.sort(function(a, b) {
-    return a.chapter !== b.chapter ? a.chapter - b.chapter : a.sort - b.sort;
-  });
-
-  var chapterList = [];
-  var keys = Object.keys(chapters).sort(function(a, b) { return parseInt(a) - parseInt(b); });
-  for (var k = 0; k < keys.length; k++) {
-    chapterList.push({ num: parseInt(keys[k]), name: chapters[keys[k]].name });
-  }
-
-  COURSE_DATA = { chapters: chapterList, videos: videosAll };
+  for(var k in ch){ch[k].videos.sort(function(a,b){return a.sort-b.sort});}
+  va.sort(function(a,b){return a.chapter!==b.chapter?a.chapter-b.chapter:a.sort-b.sort});
+  var cl=[];var ks=Object.keys(ch).sort(function(a,b){return parseInt(a)-parseInt(b)});
+  for(var j=0;j<ks.length;j++){cl.push({num:parseInt(ks[j]),name:ch[ks[j]].name});}
+  COURSE_DATA={chapters:cl,videos:va};
+  console.log("Parsed:",cl.length,"chapters,",va.length,"videos");
 }
 
-var chapterFilter = "all";
-var searchQuery = "";
+var chapterFilter="all";var searchQuery="";
 
-function initApp() {
-  if (!COURSE_DATA) return;
-
-  var sel = document.getElementById("chapterFilter");
-  COURSE_DATA.chapters.forEach(function(ch) {
-    var opt = document.createElement("option");
-    opt.value = ch.num;
-    opt.textContent = "第" + ch.num + "章 · " + ch.name;
-    sel.appendChild(opt);
+function initApp(){
+  if(!COURSE_DATA)return;
+  var sel=document.getElementById("chapterFilter");
+  COURSE_DATA.chapters.forEach(function(ch){
+    var o=document.createElement("option");o.value=ch.num;
+    o.textContent="第"+ch.num+"章 · "+ch.name;sel.appendChild(o);
   });
-
-  sel.addEventListener("change", function() { chapterFilter = this.value; render(); });
-  document.getElementById("searchInput").addEventListener("input", function() {
-    searchQuery = this.value.trim().toLowerCase();
-    render();
-  });
-
+  sel.addEventListener("change",function(){chapterFilter=this.value;render();});
+  document.getElementById("searchInput").addEventListener("input",function(){searchQuery=this.value.trim().toLowerCase();render();});
   render();
 }
 
-function render() {
-  if (!COURSE_DATA) return;
-  var videos = COURSE_DATA.videos.slice();
-
-  if (chapterFilter !== "all") {
-    var chNum = parseInt(chapterFilter);
-    videos = videos.filter(function(v) { return v.chapter === chNum; });
-  }
-
-  if (searchQuery) {
-    videos = videos.filter(function(v) {
-      return v.title.toLowerCase().indexOf(searchQuery) !== -1;
-    });
-  }
-
-  document.getElementById("countBadge").textContent = videos.length + " 个视频";
-  document.getElementById("footerCount").textContent = videos.length;
-
-  var content = document.getElementById("content");
-
-  if (videos.length === 0) {
-    content.innerHTML = "<div class="empty-state"><div class="empty-icon">📭</div><p>未查找到相关课程</p><p style="font-size:13px;margin-top:4px;">请尝试其他关键词或切换章节</p></div>";
-    return;
-  }
-
-  var grouped = {};
-  videos.forEach(function(v) {
-    if (!grouped[v.chapter]) grouped[v.chapter] = [];
-    grouped[v.chapter].push(v);
+function render(){
+  if(!COURSE_DATA)return;
+  var vids=COURSE_DATA.videos.slice();
+  if(chapterFilter!=="all"){var cn=parseInt(chapterFilter);vids=vids.filter(function(v){return v.chapter===cn});}
+  if(searchQuery){vids=vids.filter(function(v){return v.title.toLowerCase().indexOf(searchQuery)!==-1});}
+  document.getElementById("countBadge").textContent=vids.length+" 个视频";
+  document.getElementById("footerCount").textContent=vids.length;
+  var ct=document.getElementById("content");
+  if(vids.length===0){ct.innerHTML="<div class=\"empty-state\"><div class=\"empty-icon\">📭</div><p>未查找到相关课程</p><p style=\"font-size:13px;margin-top:4px;\">请尝试其他关键词或切换章节</p></div>";return;}
+  var g={};vids.forEach(function(v){if(!g[v.chapter])g[v.chapter]=[];g[v.chapter].push(v);});
+  var h="";
+  COURSE_DATA.chapters.forEach(function(ch){
+    var cv=g[ch.num];if(!cv||cv.length===0)return;
+    h+="<div class=\"chapter-section\"><div class=\"chapter-title\">第"+ch.num+"章 · "+ch.name+" <span style=\"font-weight:400;font-size:12px;color:#a0aab4;\">("+cv.length+"个)</span></div><div class=\"video-grid\">";
+    cv.forEach(function(v,i){h+=renderCard(v,i+1);});
+    h+="</div></div>";
   });
-
-  var html = "";
-  COURSE_DATA.chapters.forEach(function(ch) {
-    var chapterVideos = grouped[ch.num];
-    if (!chapterVideos || chapterVideos.length === 0) return;
-    html += '<div class="chapter-section">';
-    html += '<div class="chapter-title">第' + ch.num + '章 · ' + ch.name + ' <span style="font-weight:400;font-size:12px;color:#a0aab4;">(' + chapterVideos.length + '个)</span></div>';
-    html += '<div class="video-grid">';
-    chapterVideos.forEach(function(v, idx) { html += renderCard(v, idx + 1); });
-    html += '</div></div>';
-  });
-  content.innerHTML = html;
+  ct.innerHTML=h;
 }
 
-function renderCard(video, index) {
-  var durHtml = video.duration ? '<span class="duration">' + video.duration + '</span>' : '';
-  return '<a class="video-card" href="' + video.url + '" target="_blank" rel="noopener" title="' + escapeHtml(video.title) + '">' +
-    '<div class="video-index">' + index + '</div>' +
-    '<div class="video-info">' +
-      '<div class="video-title">' + escapeHtml(video.title) + '</div>' +
-      '<div class="video-meta">' + durHtml + '</div>' +
-    '</div>' +
-    '<div class="play-btn"></div>' +
-  '</a>';
+function renderCard(v,i){
+  var d=v.duration?"<span class=\"duration\">"+v.duration+"</span>":"";
+  return "<a class=\"video-card\" href=\""+v.url+"\" target=\"_blank\" rel=\"noopener\" title=\""+escapeHtml(v.title)+"\"><div class=\"video-index\">"+i+"</div><div class=\"video-info\"><div class=\"video-title\">"+escapeHtml(v.title)+"</div><div class=\"video-meta\">"+d+"</div></div><div class=\"play-btn\"></div></a>";
 }
 
-function escapeHtml(str) {
-  var div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
+function escapeHtml(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML;}
 
-window.addEventListener("DOMContentLoaded", async function() {
-  var savedUser = localStorage.getItem("course_user");
-  var savedHash = localStorage.getItem("course_hash");
-
-  if (savedUser && savedHash) {
-    try {
-      var resp = await fetch(USERS_URL);
-      var users = await resp.json();
-      if (users[savedUser] === savedHash) {
-        hideLogin();
-        await loadCourses();
-        return;
-      }
-    } catch (e) {}
+document.addEventListener("DOMContentLoaded",async function(){
+  console.log("DOM ready");
+  var su=localStorage.getItem("course_user");
+  var sh=localStorage.getItem("course_hash");
+  if(su&&sh){
+    console.log("Attempting auto-login for:",su);
+    try{
+      var r=await fetch(USERS_URL);
+      var users=await r.json();
+      if(users[su]===sh){console.log("Auto-login success");hideLogin();await loadCourses();return;}
+    }catch(e){console.log("Auto-login failed:",e);}
   }
-
-  document.getElementById("loginOverlay").style.display = "flex";
-
-  document.getElementById("passwordInput").addEventListener("keydown", function(e) {
-    if (e.key === "Enter") doLogin();
-  });
-  document.getElementById("usernameInput").addEventListener("keydown", function(e) {
-    if (e.key === "Enter") document.getElementById("passwordInput").focus();
-  });
+  console.log("Showing login");
+  document.getElementById("loginOverlay").style.display="flex";
+  document.getElementById("loginBtn").addEventListener("click",doLogin);
+  document.getElementById("logoutBtn").addEventListener("click",doLogout);
+  document.getElementById("passwordInput").addEventListener("keydown",function(e){if(e.key==="Enter")doLogin();});
+  document.getElementById("usernameInput").addEventListener("keydown",function(e){if(e.key==="Enter")document.getElementById("passwordInput").focus();});
 });
-</script>
 
+})();
+</script>
 </body>
 </html>
